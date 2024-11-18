@@ -5,7 +5,9 @@ main = {}
 events = {}
 local guidsUsed = {}
 function main:CreateEvent(name,cb)
-	events[name] = cb
+	if events[name] == nil then
+		events[name] = cb
+	end
 end
 function main:CallEventGlobal(name, args)
 	-- call other clients first --
