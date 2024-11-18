@@ -15,21 +15,26 @@ function main:CallEventOnlyClient(name, args, forclient)
 	-- call other clients first --
 	Xeno.SetGlobal("__rugsane", {["guid"] = HttpService:GenerateGUID(false), ["forclient"] = forclient, ["event"] = name, ["args"] = args})
 end
-while true do
-	if Xeno.GetGlobal("__rugsane") ~= nil then
-		local used = false
-		for i in guidsUsed or {} do
-			if guidsUsed[i] == Xeno.GetGlobal("__rugsane").guid then
-				used = true
+function main:init()
+	if _G.init_rugsane == nil or _G.init_rugsane == false then
+		_G.init_rugsane = true
+		while true do
+			if Xeno.GetGlobal("__rugsane") ~= nil then
+				local used = false
+				for i in guidsUsed or {} do
+					if guidsUsed[i] == Xeno.GetGlobal("__rugsane").guid then
+						used = true
+					end
+				end
+				if not used then
+					table.insert(guidsUsed, Xeno.GetGlobal("__rugsane").guid)
+					if (Xeno.GetGlobal("__rugsane").forclient == Xeno.PID) or (Xeno.GetGlobal("__rugsane").forclient == -1) then
+						events[Xeno.GetGlobal("__rugsane").event](unpack(Xeno.GetGlobal("__rugsane").args or {}))
+					end
+				end
 			end
-		end
-		if not used then
-			table.insert(guidsUsed, Xeno.GetGlobal("__rugsane").guid)
-			if (Xeno.GetGlobal("__rugsane").forclient == Xeno.PID) or (Xeno.GetGlobal("__rugsane").forclient == -1) then
-				events[Xeno.GetGlobal("__rugsane").event](unpack(Xeno.GetGlobal("__rugsane").args or {}))
-			end
+			wait(0.001)
 		end
 	end
-	wait(0.001)
 end
 return main
